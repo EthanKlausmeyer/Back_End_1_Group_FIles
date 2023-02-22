@@ -1,0 +1,13 @@
+<?php
+include ("header.php")
+?>
+<h2>Error</h2>
+<br>
+<p><?php
+echo $error_message;
+?>
+</p>
+<a href=".">Bck to request form</a>
+<?php
+include ("footer.php")
+?>
