@@ -13,52 +13,56 @@ if (!$course_id) {
 }
 
 $action = filter_input(INPUT_POST, "action", FILTER_UNSAFE_RAW);
-if(!$action){
+if (!$action) {
     $action = filter_input(INPUT_GET, "action", FILTER_UNSAFE_RAW);
-    if(!$action) {
+    if (!$action) {
         $action = 'list_assingments';
     }
 }
 
-switch($action){
-    case 'select':
-        if($city){
-            $results = select_city_by_name($city);
-            include("view/update_delete_form.php");
+switch ($action) {
+    case 'list_courses':
+        $courses = get_courses();
+        include('view/course_list.php');
+        break;
+    case "add_course":
+        add_course($course_name);
+        header("Location: .?action=list_courses");
+        break;
+    case "add_assignments":
+        if ($course_id && $description) {
+            add_assignments($course_id, $description);
+            header("Location: .?action=$course_id");
         } else {
-            $error_meggage = "Invalid city data: Chack all feilds";
+            $error = "Invalid assignment data. Check all the feilds and try again";
+            include('view/error.php');
+            exit();
+        }
+    case "delete_course":
+        if ($course_id) {
+            try {
+                delete_course($course_id);
+            } catch (PDOException $e) {
+                $error = "You can't delete a course if assignments exist in the course!";
+                include("view/error.php");
+                exit();
+            }
+            header("Location: .?action=list_courses");
+        }
+        break;
+    case "delete_assignment":
+        if ($assignment_id) {
+            delete_assignments($assignment_id);
+            header("Location: .?action=list_courses");
+        } else {
+            $error = "Missing or incorrect Assignment ID";
             include("view/error.php");
         }
         break;
-    case 'incert':
-        if($city && $countryCode && $district && $population){
-            $count = insert_city($city, $countryCode, $district, $population);
-            header("Location: .?action=select&city={$city}&created{$count}");
-        }   else {
-            $error_meggage = "Invalid Data";
-            include("view/error.php");
-        }
-        break;
-    case 'update':
-        if($id && $city && $countryCode && $district && $population){
-            $count = update_city($id, $city, $countryCode, $district, $population);
-            header("Location: .?action=select&city={$city}&created{$count}");
-        }   else {
-            $error_meggage = "Invalid Data";
-            include("view/error.php");
-        }
-        break;
-    case 'delete':
-        if($id){
-            $count = delete_city($id);
-            header("Location: .?deleted={$count}");
-        }
-        break;
+
     default:
         $course_name = get_course_name($course_id);
         $courses = get_courses();
         $assignments = get_assignments_by_course($course_id);
+        include('view/assignment_list.php');
 }
-
-
-

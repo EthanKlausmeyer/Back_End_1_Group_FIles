@@ -9,24 +9,23 @@ function get_courses(){
     $statement->closeCursor();
     return $courses;
 }
-function get_course_name($assignment_id){
-    if(!$course) {
-        return "All Course"
-    }
+function get_course_name($course_id){
     global $db;
-    $query = 'SELECT * FROM `courses` WHERE CourseID = :course_id';
+    if(!$course_id) {
+        return "All Course";
+    }
+    $query = 'SELECT * FROM courses WHERE CourseID = :course_id';
     $statement = $db-> prepare($query);
-    $statement->bindValue(":CourseID", $course_id);
+    $statement->bindValue(':course_id', $course_id);
     $statement->execute();
-    $courses = $statement->fetch();
+    $course = $statement->fetch();
     $statement->closeCursor();
-    $course_name = $course['course_name'];
-    return $courses;
+    $course_name = $course['courseName'];
+    return $course_name;
 }
 function delete_course($course_id){
     global $db;
-    $query = 'DELETE FROM courses
-    WHERE CourseID = :course_id';
+    $query = 'DELETE FROM `courses` WHERE CourseID = :course_id';
     $statement = $db-> prepare($query);
     $statement->bindValue(":course_id", $course_id);
     $statement->execute();

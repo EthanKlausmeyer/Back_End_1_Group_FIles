@@ -13,7 +13,7 @@ function get_assignments_by_course($course_id){
     }
         $statement = $db-> prepare($query);
         if ($course_id) {
-            $statement->bindValue(":courseID", $course_id);
+            $statement->bindValue(":course_id", $course_id);
         }
         $statement->execute();
         $assignments = $statement->fetchAll();
@@ -31,12 +31,12 @@ function delete_assignments($assignment_id){
     $statement->execute();
     $statement->closeCursor();
 }
-function add_assignments(){
+function add_assignments($course_id,$description){
     global $db;
-    $query = 'INSERT INTO `assignments`(`Description`, `CourseID`) VALUES (:course_id, :description)';
+    $query = 'INSERT INTO assignments (CourseID, Description) VALUES (:CourseID, :description)';
     $statement = $db-> prepare($query);
-    $statement->bindValue(":course_id", $course_id);
     $statement->bindValue(":description", $description);
+    $statement->bindValue(":CourseID", $course_id);
     $statement->execute();
     $statement->closeCursor();
 }
